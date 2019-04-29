@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+
+<body style="height:100%">
+    <canvas id="canvas" style="height: 100%">
+        当前浏览器不支持Canvas，请更换浏览器后再试
+    </canvas>
+
+    <script src="digit.js"></script>
+    <script src="draw.js"></script>
+
+    <!-- <script>
+        let ball = {
+            x: 512,
+            y: 100,
+            r: 20,
+            g: 1,
+            vx: -16,
+            vy: 0,
+            color: "#005588"
+        }
+        window.onload = function () {
+            let canvas = document.getElementById('canvas'),
+                context = canvas.getContext('2d')
+            canvas.width = 1024
+            canvas.height = 768
+            setInterval(function () {
+                render(context)
+                update()
+            }, 50)
+        }
+
+        function update() {
+            ball.x += ball.vx
+            ball.y += ball.vy
+            ball.vy += ball.g
+            if (ball.y >= 768 - ball.r) {
+                ball.y = 768 - ball.r
+                ball.vy = -ball.vy*.5 //乘以摩擦系数 模拟空气阻力
+            }
+            if (ball.x <= ball.r) {
+                ball.x = ball.r
+                ball.vx = -ball.vx
+            }
+            if (ball.x >= 1024 - ball.r) {
+                ball.x = 1024 - ball.r
+                ball.vx = -ball.vx
+            }
+            if (ball.y <= ball.r) {
+                ball.y = ball.r
+                ball.vy = -ball.vy
+            }
+        }
+
+        function render(context) {
+            context.clearRect(0, 0, context.canvas.width, context.canvas.height);
+            context.fillStyle = ball.color
+            context.beginPath();
+            context.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
+            context.closePath();
+            context.fill();
+        }
+    </script> -->
+</body>
+
+</html>

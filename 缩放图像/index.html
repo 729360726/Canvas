@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+
+<body style="background: black;">
+    <center>
+        <canvas id='canvas' style="background-color: #fff;"></canvas>
+    </center>
+    <center>
+        <input type="range" id='range' min='0.5' max="3.0" value="1.0" step="0.01" style="width: 500px;">
+    </center>
+    <!-- 离屏Canvas WaterMark-->
+    <center>
+        <canvas id='waterCanvas' style="display:none" width="160" height="40"></canvas>
+    </center>
+    <!-- 离屏Canvas magnifier-->
+    <center>
+        <canvas id='offCanvas' style="display:none"></canvas>
+    </center>
+    <script>
+        let canvas = document.getElementById("canvas"),
+            context = canvas.getContext("2d"),
+            slider = document.getElementById("range"),
+            image = new Image(),
+            waterCanvas = document.getElementById("waterCanvas"),
+            waterContext = waterCanvas.getContext("2d"),
+            offCanvas = document.getElementById("offCanvas"),
+            offContext = offCanvas.getContext("2d")
+
+        window.onload = function () {
+            image.src = '1.jpg'
+            canvas.width = 1152
+            canvas.height = 768
+            let scale = slider.value, //滑杆值
+                multiple = 0, //图片倍数
+                isMouseDown = false, //鼠标是否点击
+                point = {
+                    x: 0,
+                    y: 0
+                } //鼠标位置
+            //waterMark Canvas
+            waterContext.font = 'bold 50px Arial'
+            waterContext.fillStyle = 'rgba(255,255,255,0.5)'
+            waterContext.textBaseline = 'middle'
+            waterContext.fillText("hello", 20, 20)
+
+            image.onload = function () {
+                //设置放大镜的宽度和高度
+                offCanvas.width = image.width
+                offCanvas.height = image.height
+                multiple = offCanvas.width / canvas.width
+
+                //绘制水印
+                draw(scale)
+
+                offContext.drawImage(image, 0, 0)
+            }
+
+            //滑杆滑动触发刷新
+            slider.onchange = function () {
+                scale = slider.value
+                draw(scale)
+            }
+
+            //绘制水印
+            function draw(scale) {
+                let imgWidth = scale * canvas.width,
+                    imgHeight = scale * canvas.height,
+                    dx = canvas.width / 2 - imgWidth / 2,
+                    dy = canvas.height / 2 - imgHeight / 2
+                context.clearRect(0, 0, canvas.width, canvas.height)
+                context.drawImage(image, dx, dy, imgWidth, imgHeight);
+                context.drawImage(waterCanvas, canvas.width - waterCanvas.width,
+                    canvas.height - waterCanvas.height)
+            }
+
+            //绘制放大镜
+            function drawCanvasWithMagnifier(isShowMagnifier, point) {
+                context.clearRect(0, 0, canvas.width, canvas.height)
+                draw(scale)
+                if (isShowMagnifier == true) {
+                    let cx = point.x * multiple, //对应原图像的X坐标
+                        cy = point.y * multiple, //对应原图像的Y坐标
+                        r = 100, //设置要展示的半径
+                        dx = point.x - r,
+                        dy = point.y - r,
+                        sx = cx - r,
+                        sy = cy - r
+
+                    context.save();
+                    context.lineWidth = 10
+                    context.strokeStyle = 'pink'
+                    context.beginPath()
+                    context.arc(point.x, point.y, r, 0, Math.PI * 2)
+                    context.stroke()
+                    context.clip()
+                    context.drawImage(offCanvas, sx, sy, 2 * r, 2 * r, dx, dy, 2 * r, 2 * r)
+                    context.restore()
+                }
+            }
+
+            canvas.onmousedown = function (e) {
+                e.preventDefault()
+                isMouseDown = true
+                point.x = e.clientX - canvas.offsetLeft
+                point.y = e.clientY - canvas.offsetTop
+                drawCanvasWithMagnifier(true, point)
+            }
+
+            canvas.onmousemove = function (e) {
+                e.preventDefault()
+                if (isMouseDown) {
+                    point.x = e.clientX - canvas.offsetLeft
+                    point.y = e.clientY - canvas.offsetTop
+                    drawCanvasWithMagnifier(true, point)
+                }
+            }
+
+            canvas.onmouseout = function (e) {
+                e.preventDefault()
+                isMouseDown = false
+                drawCanvasWithMagnifier(false)
+            }
+
+            canvas.onmouseup = function (e) {
+                e.preventDefault()
+                isMouseDown = false
+                drawCanvasWithMagnifier(false)
+            }
+
+        }
+    </script>
+</body>
+
+</html>

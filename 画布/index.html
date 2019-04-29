@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #canvas {
+            background-color: #000;
+        }
+
+        img {
+            width: 200px;
+            height: 200px;
+            background-color: #000;
+        }
+    </style>
+</head>
+
+<body>
+    <center>
+        <canvas id='canvas' width="500" height="500"></canvas>
+        <button id='btn1'>清除</button>
+        <button id='btn2'>保存</button>
+    </center>
+    <img id='img'>
+</body>
+<script>
+    function $(obj) {
+        return document.getElementById(obj)
+    }
+    let canvas = $('canvas'),
+        context = canvas.getContext('2d')
+    canvas.onmousedown = function (e) {
+        let x = e.clientX - this.offsetLeft,
+            y = e.clientY - this.offsetTop
+        context.strokeStyle = 'pink'
+        context.beginPath()
+        context.moveTo(x, y)
+        canvas.onmousemove = function (e) {
+            let x = e.clientX - this.offsetLeft,
+                y = e.clientY - this.offsetTop
+            context.lineTo(x, y)
+            context.stroke()
+        }
+    }
+    canvas.onmouseup = function () {
+        this.onmousemove = null
+    }
+
+    $('btn2').onclick = function () {
+        $('img').src = canvas.toDataURL()
+        console.log(this.src)
+    }
+</script>
+
+</html>

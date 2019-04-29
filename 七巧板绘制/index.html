@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <script>
+        let gram = [{
+                p: [{
+                    x: 0,
+                    y: 0
+                }, {
+                    x: 800,
+                    y: 0
+                }, {
+                    x: 400,
+                    y: 400
+                }],
+                color: "#caff67"
+            },
+            {
+                p: [{
+                    x: 0,
+                    y: 0
+                }, {
+                    x: 400,
+                    y: 400
+                }, {
+                    x: 0,
+                    y: 800
+                }],
+                color: "#67bccf"
+            },
+            {
+                p: [{
+                    x: 800,
+                    y: 0
+                }, {
+                    x: 800,
+                    y: 400
+                }, {
+                    x: 600,
+                    y: 600
+                }, {
+                    x: 600,
+                    y: 200
+                }],
+                color: "#ef3d61"
+            },
+            {
+                p: [{
+                    x: 600,
+                    y: 200
+                }, {
+                    x: 600,
+                    y: 600
+                }, {
+                    x: 400,
+                    y: 400
+                }],
+                color: "#f9f51a"
+            },
+            {
+                p: [{
+                    x: 400,
+                    y: 400
+                }, {
+                    x: 600,
+                    y: 600
+                }, {
+                    x: 400,
+                    y: 800
+                }, {
+                    x: 200,
+                    y: 600
+                }],
+                color: "#a594c0"
+            },
+            {
+                p: [{
+                    x: 200,
+                    y: 600
+                }, {
+                    x: 400,
+                    y: 800
+                }, {
+                    x: 0,
+                    y: 800
+                }],
+                color: "#fa8ecc"
+            },
+            {
+                p: [{
+                    x: 800,
+                    y: 400
+                }, {
+                    x: 800,
+                    y: 800
+                }, {
+                    x: 400,
+                    y: 800
+                }],
+                color: "#f6ca29"
+            },
+        ]
+        window.onload = function () {
+            let canvas = document.getElementById('canvas'),
+                context = canvas.getContext("2d")
+            console.log(gram)
+            canvas.width = 800
+            canvas.height = 800
+            for (let i = 0; i < gram.length; i++) {
+                draw(gram[i], context)
+                console.log(gram[i])
+            }
+        }
+
+        function draw(grop, context) {
+            context.beginPath()
+            context.moveTo(grop.p[0].x, grop.p[0].y)
+            for (let i = 1; i < grop.p.length; i++) {
+                context.lineTo(grop.p[i].x, grop.p[i].y)
+            }
+            context.stroke()
+            context.closePath()
+            context.fillStyle = grop.color
+            context.fill()
+        }
+    </script>
+</body>
+
+</html>

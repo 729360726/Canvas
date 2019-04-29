@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        div {
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <canvas id='canvas'></canvas>
+    </div>
+    <script>
+        let canvas = document.getElementById('canvas'),
+            context = canvas.getContext('2d'),
+            Width = document.documentElement.clientWidth,
+            Height = document.documentElement.clientHeight,
+            r = 0
+        canvas.width = Width / 2
+        canvas.height = Height / 2
+        if (Width >= Height) {
+            r = canvas.height / 2
+        } else {
+            r = canvas.width / 2
+        }
+
+        function background() {
+            context.translate(canvas.width / 2, canvas.height / 2)
+            context.beginPath()
+            context.lineWidth = r / 30
+            context.arc(0, 0, r - 5, Math.PI / 180 * 0, Math.PI / 180 * 360)
+            context.stroke()
+            context.closePath()
+            let hourTime = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2]
+            context.font = r / 8 + 'px sans-serif'
+            context.textAlign = 'center'
+            context.textBaseline = 'middle'
+            for (let i = 0; i < 12; i++) {
+                let rad = 2 * Math.PI * (i / 12),
+                    x = Math.cos(rad) * (r - 35),
+                    y = Math.sin(rad) * (r - 35)
+                context.fillText(hourTime[i], x, y)
+            }
+            for (let i = 0; i < 60; i++) {
+                let rad = 2 * Math.PI * (i / 60),
+                    x = Math.cos(rad) * (r - 15),
+                    y = Math.sin(rad) * (r - 15)
+                context.beginPath()
+                if (i % 5 == 0) {
+                    context.fillStyle = '#c14543'
+                    context.arc(x, y, r / 40, Math.PI / 180 * 0, Math.PI / 180 * 360)
+                } else {
+                    context.fillStyle = '#000'
+                    context.arc(x, y, r / 50, Math.PI / 180 * 0, Math.PI / 180 * 360)
+                }
+                context.fill()
+            }
+        }
+
+        function drawHour(hour, minute) {
+            context.save()
+            context.beginPath()
+            let hourRad = 2 * Math.PI * (hour / 12),
+                minRad = 2 * Math.PI * (minute / 60 / 12)
+            context.rotate(hourRad + minRad)
+            context.lineCap = 'round'
+            context.lineWidth = r / 20;
+            context.moveTo(0, r / 20)
+            context.lineTo(0, -r / 3 - r / 16)
+            context.stroke()
+            context.restore()
+        }
+
+        function drawMinute(minute) {
+            context.save()
+            context.beginPath()
+            let minRad = 2 * Math.PI * (minute / 60)
+            context.rotate(minRad)
+            context.lineCap = 'round'
+            context.lineWidth = r / 30;
+            context.moveTo(0, r / 20)
+            context.lineTo(0, -r / 3 - r / 6)
+            context.stroke()
+            context.restore()
+        }
+
+        function drawSeconds(seconds) {
+            context.save()
+            context.beginPath()
+            let secRad = 2 * Math.PI * (seconds / 60)
+            context.rotate(secRad)
+            context.fillStyle = '#c14543'
+            context.lineCap = 'round'
+            context.moveTo(-r / 60, r / 20);
+            context.lineTo(r / 60, r / 20);
+            context.lineTo(1, -r / 3 - r / 3);
+            context.lineTo(-1, -r / 3 - r / 3);
+            context.closePath()
+            context.fill()
+            context.restore()
+        }
+
+        function drawDot() {
+            context.beginPath();
+            context.fillStyle = '#fff';
+            context.arc(0, 0, r / 30, Math.PI / 180 * 0, Math.PI / 180 * 360);
+            context.fill();
+
+        }
+
+        function draw() {
+            let date = new Date()
+            context.clearRect(0, 0, canvas.width, canvas.height)
+            context.save()
+            background()
+            drawHour(date.getHours(), date.getMinutes())
+            drawMinute(date.getMinutes())
+            drawSeconds(date.getSeconds())
+            drawDot()
+            context.restore()
+        }
+        setInterval(draw, 1000)
+    </script>
+</body>
+
+</html>

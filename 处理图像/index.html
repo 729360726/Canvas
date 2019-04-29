@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div style="margin: 20px auto;width: 1700px;">
+        <canvas id="canvasa" width="800" height="560"></canvas>
+        <canvas id="canvasb" width="800" height="560" style="border: 1px solid red"></canvas>
+    </div>
+    <div style="clear: both;"></div>
+    <center>
+        <a href="javascript:filter()">Filter</a>
+        <a href="javascript:GreyFilter()">Grey Filter</a>
+        <a href="javascript:blackEffect()">blackEffect</a>
+        <a href="javascript:reserveEffect()">reserveEffect</a>
+        <a href="javascript:blurEffect()">blurEffect</a>
+        <a href="javascript:mosaicEffect()">mosaicEffect</a>
+
+    </center>
+
+
+    <script>
+        let canvasa = document.getElementById('canvasa'),
+            canvasb = document.getElementById('canvasb'),
+            contexta = canvasa.getContext('2d'),
+            contextb = canvasb.getContext('2d'),
+            image = new Image()
+        window.onload = function () {
+            image.src = 'img/autumn.jpg'
+            image.onload = function () {
+                contexta.drawImage(image, 0, 0, canvasa.width, canvasa.height)
+            }
+        }
+
+        function filter() {
+            let imageData = contexta.getImageData(0, 0, canvasa.width, canvasa.height),
+                pixelData = imageData.data
+            for (let i = 0; i < canvasa.width * canvasa.height; i++) {
+                //pixelData[4 * i + 0] = 0
+                //pixelData[4 * i + 1] = 125
+                pixelData[4 * i + 2] = 125
+            }
+            contextb.putImageData(imageData, 0, 0, 0, 0, canvasa.width, canvasa.height)
+        }
+
+        function GreyFilter() {
+            let imageData = contexta.getImageData(0, 0, canvasa.width, canvasa.height),
+                pixelData = imageData.data
+            for (let i = 0; i < canvasa.width * canvasa.height; i++) {
+                let r = pixelData[4 * i + 0],
+                    g = pixelData[4 * i + 1],
+                    b = pixelData[4 * i + 2],
+                    Grey = r * 0.3 + g * 0.59 + b * 0.11
+                pixelData[4 * i + 0] = Grey
+                pixelData[4 * i + 1] = Grey
+                pixelData[4 * i + 2] = Grey
+            }
+            contextb.putImageData(imageData, 0, 0, 0, 0, canvasa.width, canvasa.height)
+        }
+
+        function blackEffect() {
+            let imageData = contexta.getImageData(0, 0, canvasa.width, canvasa.height),
+                pixelData = imageData.data
+            for (let i = 0; i < canvasa.width * canvasa.height; i++) {
+                let r = pixelData[4 * i + 0],
+                    g = pixelData[4 * i + 1],
+                    b = pixelData[4 * i + 2],
+                    Grey = r * 0.3 + g * 0.59 + b * 0.11
+
+                if (Grey > 255 / 2)
+                    Grey = 255
+                else
+                    Grey = 0
+
+                pixelData[4 * i + 0] = Grey
+                pixelData[4 * i + 1] = Grey
+                pixelData[4 * i + 2] = Grey
+            }
+            contextb.putImageData(imageData, 0, 0, 0, 0, canvasa.width, canvasa.height)
+        }
+
+        function reserveEffect() {
+            let imageData = contexta.getImageData(0, 0, canvasa.width, canvasa.height),
+                pixelData = imageData.data
+            for (let i = 0; i < canvasa.width * canvasa.height; i++) {
+                pixelData[4 * i + 0] = 255 - pixelData[4 * i + 0]
+                pixelData[4 * i + 1] = 255 - pixelData[4 * i + 1]
+                pixelData[4 * i + 2] = 255 - pixelData[4 * i + 2]
+            }
+            contextb.putImageData(imageData, 0, 0, 0, 0, canvasa.width, canvasa.height)
+        }
+
+        function blurEffect() {
+            let imageData = contexta.getImageData(0, 0, canvasa.width, canvasa.height),
+                pixelData = imageData.data,
+                tmpimageData = contexta.getImageData(0, 0, canvasa.width, canvasa.height),
+                tmppixelData = tmpimageData.data
+            //定义变量控制模糊程度
+            let blurR = 3,
+                totalnum = (2 * blurR + 1) * (2 * blurR + 1)
+            for (let i = blurR; i < canvasb.height - blurR; i++)
+                for (let j = blurR; j < canvasb.width - blurR; j++) {
+
+                    //计算9个点平均RGB的值
+                    let totalr = 0,
+                        totalg = 0,
+                        totalb = 0
+                    for (let dx = -blurR; dx <= blurR; dx++)
+                        for (let dy = -blurR; dy <= blurR; dy++) {
+                            //获取到附近九个点的坐标值
+                            let x = i + dx,
+                                y = j + dy,
+                                p = x * canvasb.width + y
+                            totalr += tmppixelData[p * 4 + 0]
+                            totalg += tmppixelData[p * 4 + 1]
+                            totalb += tmppixelData[p * 4 + 2]
+                        }
+                    let p = i * canvasb.width + j
+                    pixelData[4 * p + 0] = totalr / totalnum
+                    pixelData[4 * p + 1] = totalg / totalnum
+                    pixelData[4 * p + 2] = totalb / totalnum
+                }
+            contextb.putImageData(imageData, 0, 0, 0, 0, canvasa.width, canvasa.height)
+        }
+
+        function mosaicEffect() {
+            let imageData = contexta.getImageData(0, 0, canvasa.width, canvasa.height),
+                pixelData = imageData.data,
+                tmpimageData = contexta.getImageData(0, 0, canvasa.width, canvasa.height),
+                tmppixelData = tmpimageData.data
+            let size = 4,
+                totalnum = size * size
+            for (var i = 0; i < canvasb.height; i += size)
+                for (var j = 0; j < canvasb.width; j += size) {
+
+                    //原图像进行取平均值
+                    let totalr = 0,
+                        totalg = 0,
+                        totalb = 0
+                    for (let dx = 0; dx < size; dx++)
+                        for (let dy = 0; dy < size; dy++) {
+                            let x = i + dx,
+                                y = j + dy,
+                                p = x * canvasb.width + y
+                            totalr += tmppixelData[p * 4 + 0]
+                            totalg += tmppixelData[p * 4 + 1]
+                            totalb += tmppixelData[p * 4 + 2]
+                        }
+
+
+                    let resr = totalr / totalnum,
+                        resg = totalg / totalnum,
+                        resb = totalb / totalnum
+
+                    //现图像每一个像素进行赋予平均值
+                    for (let dx = 0; dx < size; dx++)
+                        for (let dy = 0; dy < size; dy++) {
+                            let x = i + dx,
+                                y = j + dy,
+                                p = x * canvasb.width + y
+                            pixelData[4 * p + 0] = resr
+                            pixelData[4 * p + 1] = resg
+                            pixelData[4 * p + 2] = resb
+                        }
+                }
+            contextb.putImageData(imageData, 0, 0, 0, 0, canvasb.width, canvasb.height)
+        }
+    </script>
+</body>
+
+</html>
